@@ -243,3 +243,75 @@ func TestGameRandTile(t *testing.T) {
 	}
 
 }
+
+func TestGameMoveLeft(t *testing.T) {
+	type field struct {
+		board [][]int
+	}
+	tests := []struct {
+		name  string
+		input field
+		want  [][]int
+	}{
+		{
+			name: "case1: 單行多次合併",
+			input: field{
+				board: [][]int{
+					{4, 4, 4, 4},
+					{2, 2, 0, 0},
+					{2, 0, 2, 0},
+					{8, 0, 0, 8},
+				},
+			},
+			want: [][]int{
+				{8, 8, 0, 0},
+				{4, 0, 0, 0},
+				{4, 0, 0, 0},
+				{16, 0, 0, 0},
+			},
+		},
+		{
+			name: "case2: 新生成的數字不參與當回合合併",
+			input: field{
+				board: [][]int{
+					{2, 2, 4, 8},
+					{0, 0, 0, 0},
+					{4, 4, 8, 8},
+					{2, 2, 2, 2},
+				},
+			},
+			want: [][]int{
+				{4, 4, 8, 0},
+				{0, 0, 0, 0},
+				{8, 16, 0, 0},
+				{4, 4, 0, 0},
+			},
+		},
+		{
+			name: "case3: 無合併，只有移動",
+			input: field{
+				board: [][]int{
+					{2, 4, 8, 16},
+					{0, 2, 0, 4},
+					{8, 0, 4, 0},
+					{2, 4, 2, 4},
+				},
+			},
+			want: [][]int{
+				{2, 4, 8, 16},
+				{2, 4, 0, 0},
+				{8, 4, 0, 0},
+				{2, 4, 2, 4},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			game := NewGame()
+			game.Init(tt.input.board, nil, nil)
+			// 模擬左移
+			game.moveLeft()
+			assert.Equal(t, tt.want, game.board)
+		})
+	}
+}
