@@ -117,6 +117,62 @@ func (g *Game) moveLeft() {
 	}
 }
 
+// transpose - 把整個  board 作轉置
+func (g *Game) transpose() [][]int {
+	// board[r][c] = board[c][r]
+	transposedBoard := make([][]int, sideSize)
+	for r := range sideSize {
+		transposedBoard[r] = make([]int, sideSize)
+		for c := range sideSize {
+			transposedBoard[r][c] = g.board[c][r]
+		}
+	}
+	return transposedBoard
+}
+
+// reverseRow - 把整個 Row 反過來
+func (g *Game) reverseRow(row []int) []int {
+	reversedRow := make([]int, len(row))
+	for idx := range len(row) {
+		reversedRow[idx] = row[len(row)-idx-1]
+	}
+	return reversedRow
+}
+
+// moveRight - 整個 board 同時往右
+func (g *Game) moveRight() {
+	// 先把整個  board 作 reverse
+	for i := range g.board {
+		g.board[i] = g.reverseRow(g.board[i])
+	}
+	// 把整個 board 往左移動
+	g.moveLeft()
+	// 再整個  board 作 reverse 回來
+	for i := range g.board {
+		g.board[i] = g.reverseRow(g.board[i])
+	}
+}
+
+// moveUp - 整個 board 同時往上
+func (g *Game) moveUp() {
+	// 先把 board 作轉置
+	g.board = g.transpose()
+	// 再把 board 同時往左
+	g.moveLeft()
+	// 再把 board 作轉置
+	g.board = g.transpose()
+}
+
+// moveDown - 把整個 board 往下移動
+func (g *Game) moveDown() {
+	// 先把整個 board 轉置
+	g.board = g.transpose()
+	// 再把整個 board 往右滑
+	g.moveRight()
+	// 再把整個 board 轉置
+	g.board = g.transpose()
+}
+
 func NewGame() *Game {
 	return &Game{
 		nil,
