@@ -20,5 +20,7 @@ jobs:
           check-latest: true
       - name: Setup dependency
         run: go mod tidy
+      - name: Test Build
+        run: make build-game
       - name: Test
         run: go test -v ./...
