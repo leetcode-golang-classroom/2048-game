@@ -20,6 +20,10 @@ jobs:
           check-latest: true
       - name: Setup dependency
         run: go mod tidy
+      - name: Install Ebitengine dependencies (optional, depending on your project)
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y libgl1-mesa-dev xorg-dev # For Linux builds
       - name: Test Build
         run: make build-game
       - name: Test
