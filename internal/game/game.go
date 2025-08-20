@@ -1,4 +1,4 @@
-package internal
+package game
 
 // sideSize - 預設 sideSize
 const sideSize = 4
