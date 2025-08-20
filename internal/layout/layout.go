@@ -1,4 +1,4 @@
-package internal
+package layout
 
 import (
 	"image/color"
@@ -14,7 +14,9 @@ const (
 	WinHeight = tileSize*gridSize + padding*(gridSize+1)
 )
 
-func (g *Game) Draw(screen *ebiten.Image) {
+type GameLayout struct{}
+
+func (g *GameLayout) Draw(screen *ebiten.Image) {
 	// 背景色
 	screen.Fill(color.RGBA{250, 248, 239, 255})
 	// 畫 4x4 格子
@@ -31,10 +33,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (g *GameLayout) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return WinWidth, WinHeight
 }
 
-func (g *Game) Update() error {
+func (g *GameLayout) Update() error {
 	return nil
+}
+
+func NameGameLayout() *GameLayout {
+	return &GameLayout{}
 }
