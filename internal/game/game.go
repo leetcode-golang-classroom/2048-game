@@ -180,3 +180,7 @@ func NewGame() *Game {
 		defaultRandomFunc,
 	}
 }
+
+func (g *Game) Data(row int, col int) int {
+	return g.board[row][col]
+}
