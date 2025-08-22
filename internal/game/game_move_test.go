@@ -73,7 +73,7 @@ func TestGameMoveLeft(t *testing.T) {
 			game := NewGame()
 			game.Init(tt.input.board, nil, nil)
 			// 模擬左移
-			game.moveLeft()
+			game.MoveLeft()
 			assert.Equal(t, tt.want, game.board)
 		})
 	}
@@ -212,28 +212,28 @@ func TestGameMove(t *testing.T) {
 			game := NewGame()
 			game.Init(tt.input.board, nil, nil)
 			// 模擬左移
-			game.moveLeft()
+			game.MoveLeft()
 			assert.Equal(t, tt.want.left, game.board)
 		})
 		t.Run(fmt.Sprintf("%s right", tt.name), func(t *testing.T) {
 			game := NewGame()
 			game.Init(tt.input.board, nil, nil)
 			// 模擬右移
-			game.moveRight()
+			game.MoveRight()
 			assert.Equal(t, tt.want.right, game.board)
 		})
 		t.Run(fmt.Sprintf("%s up", tt.name), func(t *testing.T) {
 			game := NewGame()
 			game.Init(tt.input.board, nil, nil)
 			// 模擬上移
-			game.moveUp()
+			game.MoveUp()
 			assert.Equal(t, tt.want.up, game.board)
 		})
 		t.Run(fmt.Sprintf("%s down", tt.name), func(t *testing.T) {
 			game := NewGame()
 			game.Init(tt.input.board, nil, nil)
 			// 模擬下移
-			game.moveDown()
+			game.MoveDown()
 			assert.Equal(t, tt.want.down, game.board)
 		})
 	}

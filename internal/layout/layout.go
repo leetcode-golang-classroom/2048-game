@@ -73,10 +73,6 @@ func (g *GameLayout) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return WinWidth, WinHeight
 }
 
-func (g *GameLayout) Update() error {
-	return nil
-}
-
 func NameGameLayout(gameInstance *game.Game) *GameLayout {
 	return &GameLayout{
 		gameInstance: gameInstance,

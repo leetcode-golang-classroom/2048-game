@@ -10,14 +10,10 @@ import (
 
 func main() {
 	ebiten.SetWindowSize(layout.WinWidth, layout.WinHeight)
-	ebiten.SetWindowTitle("2048 - Day 8 測試")
+	ebiten.SetWindowTitle("2048 - Day 9 測試")
 	gameInstance := game.NewGame()
-	gameInstance.Init([][]int{
-		{2, 4, 8, 16},
-		{32, 64, 128, 256},
-		{512, 1024, 2048, 4096},
-		{0, 0, 0, 8192},
-	}, nil, nil)
+	gameInstance.AddRandomTile(game.Default)
+	gameInstance.AddRandomTile(game.Default)
 	gameLayout := layout.NameGameLayout(gameInstance)
 	if err := ebiten.RunGame(gameLayout); err != nil {
 		log.Fatal(err)

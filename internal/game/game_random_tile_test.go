@@ -138,7 +138,7 @@ func TestGameRandTile(t *testing.T) {
 			game := NewGame()
 			game.Init(tt.input.board, tt.input.randomPosFunc, tt.input.randomFunc)
 			// 模擬隨機產生 tile
-			game.addRandomTile()
+			game.AddRandomTile(Default)
 			assert.Equal(t, tt.want, game.board)
 		})
 	}

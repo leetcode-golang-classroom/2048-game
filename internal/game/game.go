@@ -18,11 +18,25 @@ type Game struct {
 	randomFunc          randomGenerator
 }
 
+type RandomType int
+
+const (
+	Default RandomType = iota
+	DirectionUp
+	DirectionDown
+	DirectionLeft
+	DirectionRight
+)
+
 // Init - 初始化
 func (g *Game) Init(data [][]int, randomPosFunc randomPositoner, randomFunc randomGenerator) {
 	// setup random functions
-	g.randomPositonerFunc = randomPosFunc
-	g.randomFunc = randomFunc
+	if randomFunc != nil {
+		g.randomPositonerFunc = randomPosFunc
+	}
+	if randomPosFunc != nil {
+		g.randomFunc = randomFunc
+	}
 	// 建立棋盤
 	g.board = make([][]int, sideSize)
 	for index := range g.board {
@@ -42,17 +56,80 @@ func (g *Game) Init(data [][]int, randomPosFunc randomPositoner, randomFunc rand
 	}
 }
 
-// addRandomTile - 新增隨機的 2 或是 4 到一個空的 tile 內
-func (g *Game) addRandomTile() {
-	// 蒐集所有空的 tile
-	emptyTiles := make([][2]int, 0, sideSize*sideSize)
-	for r := 0; r < sideSize; r++ {
-		for c := 0; c < sideSize; c++ {
-			if g.board[r][c] == 0 {
-				emptyTiles = append(emptyTiles, [2]int{r, c})
+var collectStrategyMap map[RandomType]func(g *Game) [][2]int = map[RandomType]func(g *Game) [][2]int{
+	Default: func(g *Game) [][2]int {
+		emptyTiles := make([][2]int, 0, sideSize*sideSize)
+		for r := 0; r < sideSize; r++ {
+			for c := 0; c < sideSize; c++ {
+				if g.board[r][c] == 0 {
+					emptyTiles = append(emptyTiles, [2]int{r, c})
+				}
 			}
 		}
-	}
+		return emptyTiles
+	},
+	DirectionDown: func(g *Game) [][2]int {
+		emptyTiles := make([][2]int, 0, sideSize*sideSize)
+		for r := 0; r < sideSize; r++ {
+			for c := 0; c < sideSize; c++ {
+				if g.board[r][c] == 0 {
+					if len(emptyTiles) >= 4 {
+						break
+					}
+					emptyTiles = append(emptyTiles, [2]int{r, c})
+				}
+			}
+		}
+		return emptyTiles
+	},
+	DirectionUp: func(g *Game) [][2]int {
+		emptyTiles := make([][2]int, 0, sideSize*sideSize)
+		for r := sideSize - 1; r > 0; r-- {
+			for c := 0; c < sideSize; c++ {
+				if g.board[r][c] == 0 {
+					if len(emptyTiles) >= 4 {
+						break
+					}
+					emptyTiles = append(emptyTiles, [2]int{r, c})
+				}
+			}
+		}
+		return emptyTiles
+	},
+	DirectionLeft: func(g *Game) [][2]int {
+		emptyTiles := make([][2]int, 0, sideSize*sideSize)
+		for c := sideSize - 1; c > 0; c-- {
+			for r := 0; r < sideSize; r++ {
+				if g.board[r][c] == 0 {
+					if len(emptyTiles) >= 4 {
+						break
+					}
+					emptyTiles = append(emptyTiles, [2]int{r, c})
+				}
+			}
+		}
+		return emptyTiles
+	},
+	DirectionRight: func(g *Game) [][2]int {
+		emptyTiles := make([][2]int, 0, sideSize*sideSize)
+		for c := 0; c < sideSize; c++ {
+			for r := 0; r < sideSize; r++ {
+				if g.board[r][c] == 0 {
+					if len(emptyTiles) >= 4 {
+						break
+					}
+					emptyTiles = append(emptyTiles, [2]int{r, c})
+				}
+			}
+		}
+		return emptyTiles
+	},
+}
+
+// AddRandomTile - 新增隨機的 2 或是 4 到一個空的 tile 內
+func (g *Game) AddRandomTile(randomType RandomType) {
+	// 蒐集所有空的 tile
+	emptyTiles := collectStrategyMap[randomType](g)
 
 	// 如果所有格子都滿了
 	if len(emptyTiles) == 0 {
@@ -110,8 +187,8 @@ func (g *Game) slideAndMergeLeft(row []int) []int {
 	return result
 }
 
-// moveLeft - 整個 board 同時左移
-func (g *Game) moveLeft() {
+// MoveLeft - 整個 board 同時左移
+func (g *Game) MoveLeft() {
 	for r := 0; r < sideSize; r++ {
 		g.board[r] = g.slideAndMergeLeft(g.board[r][:])
 	}
@@ -139,43 +216,47 @@ func (g *Game) reverseRow(row []int) []int {
 	return reversedRow
 }
 
-// moveRight - 整個 board 同時往右
-func (g *Game) moveRight() {
+// MoveRight - 整個 board 同時往右
+func (g *Game) MoveRight() {
 	// 先把整個  board 作 reverse
 	for i := range g.board {
 		g.board[i] = g.reverseRow(g.board[i])
 	}
 	// 把整個 board 往左移動
-	g.moveLeft()
+	g.MoveLeft()
 	// 再整個  board 作 reverse 回來
 	for i := range g.board {
 		g.board[i] = g.reverseRow(g.board[i])
 	}
 }
 
-// moveUp - 整個 board 同時往上
-func (g *Game) moveUp() {
+// MoveUp - 整個 board 同時往上
+func (g *Game) MoveUp() {
 	// 先把 board 作轉置
 	g.board = g.transpose()
 	// 再把 board 同時往左
-	g.moveLeft()
+	g.MoveLeft()
 	// 再把 board 作轉置
 	g.board = g.transpose()
 }
 
-// moveDown - 把整個 board 往下移動
-func (g *Game) moveDown() {
+// MoveDown - 把整個 board 往下移動
+func (g *Game) MoveDown() {
 	// 先把整個 board 轉置
 	g.board = g.transpose()
 	// 再把整個 board 往右滑
-	g.moveRight()
+	g.MoveRight()
 	// 再把整個 board 轉置
 	g.board = g.transpose()
 }
 
 func NewGame() *Game {
+	board := make([][]int, sideSize)
+	for idx := range board {
+		board[idx] = make([]int, sideSize)
+	}
 	return &Game{
-		nil,
+		board,
 		defaultRandomPositioner,
 		defaultRandomFunc,
 	}
