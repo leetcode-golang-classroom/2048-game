@@ -11,8 +11,8 @@ import (
 	"github.com/leetcode-golang-classroom/2048-game/internal/game"
 )
 
-var restartButtonRect = image.Rect(165, 250, 285, 300) // X1,Y1,X2,Y2
-
+var restartButtonRect = image.Rect(165, 250, 285, 300)  // X1,Y1,X2,Y2
+var continueButtonRect = image.Rect(145, 250, 305, 300) // X1,Y1,X2,Y2
 const (
 	tileSize  = 100
 	gridSize  = 4
@@ -24,6 +24,8 @@ const (
 type GameLayout struct {
 	gameInstance *game.Game
 	isGameOver   bool
+	isPlayerWin  bool
+	isContinue   bool
 }
 
 // drawCell - 透過目前值來畫出目前 cell 的格子顏色
@@ -63,6 +65,10 @@ func (g *GameLayout) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{250, 248, 239, 255})
 	// 畫出目前局面
 	g.drawBoard(screen)
+	// 當完成了 2048 條件 顯示  You Win 與 Continue button
+	if g.isPlayerWin && !g.isContinue {
+		g.drawYouWin(screen)
+	}
 	// 當 gameOver 顯示 GameOver
 	if g.isGameOver {
 		g.drawGameOver(screen)
@@ -111,6 +117,56 @@ func (g *GameLayout) drawGameOver(screen *ebiten.Image) {
 		Size:   48.0,
 	}, textOpts)
 	g.drawRestartButton(screen)
+}
+
+func (g *GameLayout) drawConverOnYouWin(screen *ebiten.Image) {
+	w, h := screen.Bounds().Dx(), screen.Bounds().Dy()
+	vector.DrawFilledRect(
+		screen,
+		0, 0, // x, y
+		float32(w), float32(h), // width, height
+		color.RGBA{100, 100, 0, 60}, // 半透明黃色 (128 = 約 50% 透明)
+		false,
+	)
+}
+
+// drawYouWin 畫出 You Win
+func (g *GameLayout) drawYouWin(screen *ebiten.Image) {
+	g.drawConverOnYouWin(screen)
+	// 設定顯示 Game Over 文字
+	textXPos := WinHeight / 2
+	textYPos := WinWidth / 2
+	textOpts := &text.DrawOptions{}
+	textOpts.ColorScale.ScaleWithColor(color.RGBA{220, 220, 0, 255})
+	textOpts.PrimaryAlign = text.AlignCenter
+	textOpts.SecondaryAlign = text.AlignCenter
+	textOpts.GeoM.Translate(float64(textXPos), float64(textYPos))
+	text.Draw(screen, "You Win", &text.GoTextFace{
+		Source: mplusFaceSource,
+		Size:   48.0,
+	}, textOpts)
+	g.drawContinueButton(screen)
+}
+
+func (g *GameLayout) drawContinueButton(screen *ebiten.Image) {
+	// 畫 Restart 按鈕
+	vector.DrawFilledRect(screen,
+		float32(continueButtonRect.Min.X),
+		float32(continueButtonRect.Min.Y),
+		float32(continueButtonRect.Dx()),
+		float32(continueButtonRect.Dy()),
+		color.RGBA{100, 100, 100, 200},
+		true,
+	)
+	textOpts := &text.DrawOptions{}
+	textOpts.ColorScale.ScaleWithColor(color.Black)
+	textOpts.PrimaryAlign = text.AlignCenter
+	textOpts.SecondaryAlign = text.AlignCenter
+	textOpts.GeoM.Translate(float64(continueButtonRect.Min.X+continueButtonRect.Dx()/2), float64(continueButtonRect.Min.Y+continueButtonRect.Dy()/2))
+	text.Draw(screen, "Continue", &text.GoTextFace{
+		Source: mplusFaceSource,
+		Size:   30,
+	}, textOpts)
 }
 
 // drawRestartButton - 畫出 restart button

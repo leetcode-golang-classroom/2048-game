@@ -14,8 +14,20 @@ func (g *GameLayout) Update() error {
 		g.handleRestartGame()
 		return nil
 	}
+
+	// 判斷是否 Player Win
+	if g.isPlayerWin && !g.isContinue {
+		g.handleContinueGame()
+		return nil
+	}
 	// 根據輸入產生對應的更新
 	g.handleInput()
+
+	// 根據目前的盤面決定是否要顯示 You Win
+	if !g.isContinue && g.gameInstance.IsPlayerWin() {
+		g.isPlayerWin = true
+		return nil
+	}
 
 	// 根據目前的盤面跟更新是否能夠繼續執行
 	if g.gameInstance.IsGameOver() {
@@ -55,8 +67,26 @@ func (g *GameLayout) handleRestartGame() {
 	}
 }
 
+// handleContinueGame - 偵測目前 restart button
+func (g *GameLayout) handleContinueGame() {
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		if restartButtonRect.Min.X <= x && x <= restartButtonRect.Max.X &&
+			restartButtonRect.Min.Y <= y && y <= restartButtonRect.Max.Y {
+			g.continueGame()
+		}
+	}
+}
+
 // restartGame - 重設目前遊戲狀態
 func (g *GameLayout) restartGame() {
 	g.gameInstance.InitGame()
 	g.isGameOver = false
+	g.isContinue = false
+}
+
+// continueGame -
+func (g *GameLayout) continueGame() {
+	g.isPlayerWin = false
+	g.isContinue = true
 }

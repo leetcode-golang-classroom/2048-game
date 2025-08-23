@@ -44,3 +44,21 @@ func (g *Game) InitGame() {
 	g.AddRandomTile(Default)
 	g.AddRandomTile(Default)
 }
+
+// is2048tileShow - 檢查是否已經達成 2048 tile 的完成條件
+func (g *Game) is2048tileShow() bool {
+	for row := 0; row < sideSize; row++ {
+		for col := 0; col < sideSize; col++ {
+			if g.board[row][col] == 2048 {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// IsPlayerWin - 檢查玩家是否達成勝利條件
+func (g *Game) IsPlayerWin() bool {
+	return g.is2048tileShow()
+}
