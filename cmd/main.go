@@ -10,7 +10,7 @@ import (
 
 func main() {
 	ebiten.SetWindowSize(layout.WinWidth, layout.WinHeight)
-	ebiten.SetWindowTitle("2048 - Day 9 測試")
+	ebiten.SetWindowTitle("2048 - Day 10 測試")
 	gameInstance := game.NewGame()
 	gameInstance.AddRandomTile(game.Default)
 	gameInstance.AddRandomTile(game.Default)
