@@ -8,6 +8,24 @@ import (
 
 // Update - 用來處理畫面偵測,與使用者互動，並且觸發狀態變更
 func (g *GameLayout) Update() error {
+	// 判斷是否遊戲結束
+	if g.isGameOver {
+		// 處理 restart 邏輯
+		g.handleRestartGame()
+		return nil
+	}
+	// 根據輸入產生對應的更新
+	g.handleInput()
+
+	// 根據目前的盤面跟更新是否能夠繼續執行
+	if g.gameInstance.IsGameOver() {
+		g.isGameOver = true
+	}
+	return nil
+}
+
+// handleInput - 處理輸入產生對應的更新
+func (g *GameLayout) handleInput() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
 		g.gameInstance.MoveUp()
 		g.gameInstance.AddRandomTile(game.DirectionUp)
@@ -24,6 +42,21 @@ func (g *GameLayout) Update() error {
 		g.gameInstance.MoveRight()
 		g.gameInstance.AddRandomTile(game.DirectionRight)
 	}
+}
 
-	return nil
+// handleRestartGame - 偵測目前 restart button
+func (g *GameLayout) handleRestartGame() {
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		if restartButtonRect.Min.X <= x && x <= restartButtonRect.Max.X &&
+			restartButtonRect.Min.Y <= y && y <= restartButtonRect.Max.Y {
+			g.restartGame()
+		}
+	}
+}
+
+// restartGame - 重設目前遊戲狀態
+func (g *GameLayout) restartGame() {
+	g.gameInstance.InitGame()
+	g.isGameOver = false
 }
