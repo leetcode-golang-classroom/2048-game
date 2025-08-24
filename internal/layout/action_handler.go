@@ -85,7 +85,7 @@ func (g *GameLayout) restartGame() {
 	g.isContinue = false
 }
 
-// continueGame -
+// continueGame - 繼續遊戲把 isPlayerWin 的狀態 reset 成 false, isContinue 標記起來
 func (g *GameLayout) continueGame() {
 	g.isPlayerWin = false
 	g.isContinue = true

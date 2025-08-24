@@ -148,8 +148,9 @@ func (g *GameLayout) drawYouWin(screen *ebiten.Image) {
 	g.drawContinueButton(screen)
 }
 
+// drawContinueButton - 畫出 Continue Button
 func (g *GameLayout) drawContinueButton(screen *ebiten.Image) {
-	// 畫 Restart 按鈕
+	// 畫 Continue 按鈕
 	vector.DrawFilledRect(screen,
 		float32(continueButtonRect.Min.X),
 		float32(continueButtonRect.Min.Y),
