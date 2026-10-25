@@ -4,7 +4,7 @@ build-game:
 	@CGO_ENABLED=1 GOOS=linux go build -o bin/2048-game cmd/main.go
 
 run-game: build-game
-	@./bin/2048-game
+	@env -u EGL_PLATFORM ./bin/2048-game
 
 
 coverage:
